@@ -49,8 +49,6 @@ def decode(entry):
                 output += '6'
     return int(output)
 
-
-
 print(sum(analyse1(e) for e in a))
 print(sum(decode(e) for e in a))
 end=time.time()
