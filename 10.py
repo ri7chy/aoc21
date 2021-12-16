@@ -3,10 +3,7 @@ start=time.time()
 with open('10.in') as fi:
     a = [lines[:-1] for lines in fi.readlines()]
 
-#for l in a: print(l)
-
 def corrupted(line):
-    #print('corrupted',line)
     for i in range(len(line)-1):
         if line[i] in ['(','[','{','<']:
             if line[i+1] not in ['(','[','{','<']:
@@ -26,11 +23,9 @@ def shorten(line):
             line = line.replace('{}','')
         elif '<>' in line:
             line = line.replace('<>','')
-    #print(line)
     return line
 
 def score(line):
-    print('score of ', line)
     s = 0
     for i in range(len(line)-1,-1,-1):
         if line[i] == '(' : point = 1
@@ -38,7 +33,6 @@ def score(line):
         elif line[i] == '{' : point = 3
         elif line[i] == '<' : point = 4
         s = s*5 + point
-        print(line[i],i, s)
     return s
 
 illegalChar = {')':0,']':0,'}':0,'>':0}
@@ -49,13 +43,11 @@ for l in a:
     else: incomplete += [l]
 
 errorscore = illegalChar[')']*3 + illegalChar[']']*57 + illegalChar['}']*1197 + illegalChar['>']*25137
-print(errorscore)
-#print(illegalChar)
+print('part1', errorscore)
 scores = []
 for l in incomplete:
     scores += [score(shorten(l))]
-#print(scores)
 scores.sort()
-print(scores[len(scores)//2])
+print('part2', scores[len(scores)//2])
 end=time.time()
 print(round(end-start,4))

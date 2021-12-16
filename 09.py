@@ -14,45 +14,38 @@ def compare(r,c):
         rr,cc = r+dr[i],c+dc[i]
         if rr>=0 and cc >= 0 and rr < height and cc < width:
             if a[r][c] >= a[rr][cc]: lowpoint = False
-
     return lowpoint
 
+lowpoints = set()
 def main1():
     risklvl = 0
     for r in range(height):
         for c in range(width):
             if compare(r,c):
+                lowpoints.add((r,c))
                 risklvl += 1 + a[r][c]
+    print(lowpoints)
     print(risklvl)
-#First try for a recursive solution ... output is to low.
-def compare_rek(r,c,basin):         # ro, co - origin
+
+#creatin basin recursively by walking through adjacent points, adding them ...
+def compare_rek(r,c,basin):
     dr = [1,0,-1,0]
     dc = [0,1,0,-1]
-    lowpoint = True
-    compared = 0
+    newpoints = set()
     for i in range(4):
         rr,cc = r+dr[i],c+dc[i]
-        if (rr,cc) not in basin and rr>=0 and cc >= 0 and rr < height and cc < width:
-            if a[r][c] >= a[rr][cc]:
-                lowpoint = False
-            compared +=1 #to avoid, that an isolated high is counted
-    if lowpoint and compared > 0:
-        basin.add((r,c))
-        for i in range(4):
-            rr,cc = r+dr[i],c+dc[i]
-            if (rr,cc) not in basin and rr>=0 and cc >= 0 and rr < height and cc < width:
-                basin.union(compare_rek(rr,cc,basin))
+        if (rr,cc) not in basin and rr>=0 and cc >= 0 and rr < height and cc < width and a[rr][cc]<9:
+                newpoints.add((rr,cc))
+    basin = basin.union(newpoints)
+    for np in newpoints:
+        basin = basin.union(compare_rek(np[0],np[1],basin))
     return basin
 
-def main2b(): # main for part 2 with recursion / this solution finds not the exact basins
+def main2(): # main for part 2 with recursion  / corrected version... because:
+    #all other locations will always be part of exactly one basin.
     basins = []
-    for r in range(height):
-        for c in range(width):
-            basin = compare_rek(r,c,set())
-            if len(basin) > 0:
-                basins += [len(basin)] #compare_rek(r,c,-1,-1)
-
-    print(basins)
+    for r,c in lowpoints:
+        basins += [len(compare_rek(r,c,set({(r,c)})))]
     prod = 1
     for i in range(3):
         maximum = max(basins)
@@ -60,6 +53,7 @@ def main2b(): # main for part 2 with recursion / this solution finds not the exa
         print(maximum)
         prod *=maximum
     print(prod)
+
 
 #solution for part 2 ... checking the borders by 9 and creating sets of basins
 def checkadjacent(r,c,basins):
@@ -85,6 +79,7 @@ def joinbasins(basins):
     dc = [0,1,0,-1]
     final=[]
     while (len(basins))!=0:
+        b = basins.pop(0)
         found =False
         f2= None
         for r,c in b:
@@ -101,14 +96,14 @@ def joinbasins(basins):
             final += [b]
     return final
 
-def main2():
+def main2it():
     fin, bas = [],[]
     for r in range(height):
         for c in range(width):
             if a[r][c]!= 9:
                 bas = checkadjacent(r,c,bas)
     fin= bas
-    while len(fin) != len(joinbasins(fin.copy()
+    while len(fin) != len(joinbasins(fin.copy())):
         fin = joinbasins(fin.copy())
     lenghts =[]
     for f in fin:
