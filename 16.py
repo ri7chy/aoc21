@@ -2,7 +2,6 @@ import time
 start=time.time()
 with open('16.in') as fi:
     raw=fi.read()[:-1]
-#print(raw)
 transmission = ''
 for h in raw:
     x = bin(int(h,base=16))
@@ -17,7 +16,6 @@ def literal(trans):
         trans = trans[5:]
         if x =='0':
             break
-
     return int(number,2),trans
 
 a = []
@@ -73,9 +71,6 @@ def packet(trans):
                 result = 1 
     a.append((pversion+versions,ptype,result))
     return a , rest
-
-
-#print(transmission)
 packets, rest = packet(transmission)
 print('part1',packets[-1][0])
 print('part2',packets[-1][2])
